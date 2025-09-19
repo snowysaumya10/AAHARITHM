@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aaharithm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+  :root{
+    --bg:#0f172a;--card:#111827;--muted:#94a3b8;--text:#e5e7eb;--primary:#22c55e;--accent:#38bdf8;--warn:#f59e0b;--danger:#ef4444;
+    --border:#1f2937;--chip:#1f2937;--pill:#0b1220;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;background:linear-gradient(180deg,#0b1220,#0f172a);color:var(--text)}
+  header{position:sticky;top:0;z-index:50;background:rgba(11,18,32,.8);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:10px 16px}
+  header .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+  header .brand .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--primary),#10b981);display:grid;place-items:center;color:#0b1220;font-weight:900}
+  header input[type="search"]{flex:1;max-width:560px;background:#0b1220;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);outline:none}
+  header .actions{margin-left:auto;display:flex;gap:8px}
+  header .btn{background:var(--pill);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+  header .btn.primary{background:linear-gradient(135deg,var(--primary),#16a34a);border:none}
+
+  .shell{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px)}
+  aside{border-right:1px solid var(--border);padding:16px;background:#0b1220}
+  aside .section-title{font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 12px 8px}
+  .nav{display:flex;flex-direction:column;gap:6px}
+  .nav button{display:flex;align-items:center;gap:10px;padding:10px 12px;background:transparent;border:1px solid transparent;border-radius:10px;color:var(--text);cursor:pointer;text-align:left}
+  .nav button.active,.nav button:hover{background:var(--pill);border-color:var(--border)}
+  .nav .emoji{width:22px}
+
+  main{padding:18px}
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:1fr 1fr}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .grid.cols-4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1100px){.grid.cols-3,.grid.cols-4{grid-template-columns:1fr 1fr}}
+  @media(max-width:800px){.shell{grid-template-columns:1fr}aside{position:sticky;top:56px;z-index:20}}
+
+  .card{background:linear-gradient(180deg,#0e1528, #0c1424);border:1px solid var(--border);border-radius:14px;padding:14px}
+  .card h3{margin:0 0 8px;font-size:16px}
+  .muted{color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:999px;font-size:12px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{background:var(--pill);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),#0891b2);border:none}
+  .btn.success{background:linear-gradient(135deg,var(--primary),#16a34a);border:none}
+  .btn.warn{background:linear-gradient(135deg,var(--warn),#d97706);border:none}
+  .btn.danger{background:linear-gradient(135deg,var(--danger),#dc2626);border:none}
+  .btn.ghost{background:transparent;border:1px dashed var(--border)}
+  .btn.small{padding:6px 8px;font-size:12px}
+  .btn.block{display:block;width:100%}
+
+  .table{width:100%;border-collapse:collapse}
+  .table th,.table td{border-bottom:1px solid var(--border);padding:10px;text-align:left;font-size:14px}
+  .table th{color:var(--muted);font-weight:600}
+  .table tr:hover{background:#0b1220}
+
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+  .field label{font-size:12px;color:var(--muted)}
+  .field input,.field select,.field textarea{background:#0b1220;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px;outline:none}
+  .field textarea{min-height:80px}
+
+  .tabbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .tabbar .tab{padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--pill);cursor:pointer}
+  .tabbar .tab.active{background:linear-gradient(135deg,#1f2937,#0b1220)}
+
+  .kpi{display:flex;align-items:center;justify-content:space-between}
+  .kpi .big{font-size:24px;font-weight:700}
+  .kpi .label{color:var(--muted);font-size:12px}
+
+  .badge{padding:3px 8px;border-radius:999px;font-size:12px;border:1px solid var(--border);background:var(--chip)}
+  .status-upcoming{color:#22c55e}.status-completed{color:#38bdf8}.status-cancelled{color:#ef4444}
+
+  .chat{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow:auto;padding:8px;border:1px solid var(--border);border-radius:12px;background:#0b1220}
+  .msg{display:flex;gap:8px;align-items:flex-start}
+  .msg .bubble{padding:10px 12px;border-radius:12px;border:1px solid var(--border);max-width:740px}
+  .msg.user .bubble{background:#0a1a31}
+  .msg.bot .bubble{background:#0f1f38}
+  .chatbar{display:flex;gap:8px;margin-top:8px}
+  .chatbar input{flex:1}
+  .code{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:#0b1220;border:1px dashed var(--border);padding:8px;border-radius:8px}
+
+  .hr{border-bottom:1px dashed var(--border);margin:10px 0}
+  .right{margin-left:auto}
+  .center{display:grid;place-items:center}
+  .hidden{display:none!important}
+
+  /* ========== Responsive Enhancements (tablet & mobile) ========== */
+
+  /* Tablet: narrower search, slightly smaller spacing */
+  @media (max-width:1100px) and (min-width:801px) {
+    header input[type="search"]{max-width:360px}
+    .shell{grid-template-columns:220px 1fr}
+    aside{padding:12px}
+    main{padding:14px}
+    .card{padding:12px}
+    .grid.cols-3{grid-template-columns:1fr 1fr}
+  }
+
+  /* Mobile: stack layout, compact controls, horizontal nav in aside */
+  @media (max-width:800px) {
+    header{padding:8px 12px;gap:8px}
+    header .brand{font-size:16px}
+    header .brand .logo{width:24px;height:24px;border-radius:6px}
+    /* make search flow under brand and actions on small screens */
+    header{flex-wrap:wrap}
+    header input[type="search"]{order:3;flex-basis:100%;max-width:none;margin-top:8px}
+    header .actions{order:2;margin-left:0;gap:6px;flex-wrap:wrap;width:100%;justify-content:flex-end}
+    header .actions .btn, header .actions label.btn{padding:6px 8px;font-size:13px}
+
+    /* single-column app shell */
+    .shell{grid-template-columns:1fr}
+    aside{
+      position:sticky;top:56px;z-index:30;
+      border-right:none;border-bottom:1px solid var(--border);
+      padding:10px;display:flex;align-items:center;gap:8px;overflow:auto;background:#071124;
+    }
+    aside .section-title{display:none} /* reduce duplication on mobile */
+    .nav{flex-direction:row;gap:8px}
+    .nav button{white-space:nowrap;padding:8px;border-radius:10px;min-height:40px}
+    .nav button .emoji{display:inline-block}
+
+    /* content adjustments */
+    main{padding:12px}
+    .card{padding:12px;border-radius:12px}
+    .grid.cols-3,.grid.cols-4{grid-template-columns:1fr}
+    .grid.cols-2{grid-template-columns:1fr}
+    .grid.cols-6{grid-template-columns:repeat(2,1fr)}
+    .grid.cols-5{grid-template-columns:repeat(2,1fr)}
+    .grid.cols-4{grid-template-columns:repeat(2,1fr)}
+
+    /* chat and tables */
+    .chat{max-height:260px}
+    .tabbar{overflow:auto}
+    .table{display:block;width:100%;overflow:auto}
+    .table th,.table td{white-space:nowrap;padding:8px;font-size:13px}
+    .field input,.field select,.field textarea{padding:8px}
+    .btn.small{padding:6px 8px;font-size:12px}
+
+    /* reduce text wrap on pills/badges */
+    .pill, .badge{font-size:11px;padding:4px 6px}
+  }
+
+  /* Very small phones - additional compacting */
+  @media (max-width:420px){
+    header .brand{font-size:15px}
+    header .btn, .btn{padding:6px 8px;font-size:13px}
+    .card h3{font-size:15px}
+    .kpi .big{font-size:20px}
+    .chat .bubble{font-size:14px}
+  }
+
+  /* Ensure tables and code blocks can scroll horizontally on any narrow viewport */
+  .table, .code{overflow-x:auto}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">A++</div>
+    Aaharithm
+  </div>
+  <input id="globalSearch" type="search" placeholder="Search patients by name, phone, ID..." />
+  <div class="actions">
+    <button class="btn" id="exportBtn">Export JSON</button>
+    <label class="btn">
+      Import JSON
+      <input id="importFile" type="file" accept=".json" style="display:none" />
+    </label>
+    <button class="btn primary" id="newPatientBtn">+ New Patient</button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside>
+    <div class="section-title">Navigation</div>
+    <div class="nav">
+      <button data-route="dashboard" class="active"><span class="emoji">🏠</span>Dashboard</button>
+      <button data-route="patients"><span class="emoji">👥</span>Patients</button>
+      <button data-route="new"><span class="emoji">➕</span>New Patient</button>
+      <button data-route="diet"><span class="emoji">🥗</span>Diet Coach</button>
+      <button data-route="about"><span class="emoji">ℹ️</span>About</button>
+    </div>
+    <div class="section-title">Selected Patient</div>
+    <div id="sidebarPatient" class="card">
+      <div class="muted">No patient selected</div>
+    </div>
+  </aside>
+
+  <main id="view">
+    <!-- Dynamic content renders here -->
+  </main>
+</div>
+
+<script>
+/* ========== Simple Frontend Data Layer (LocalStorage) ========== */
+const LS_KEY = 'health360_pms';
+function uid(){return 'id_' + Math.random().toString(36).slice(2,10)}
+function load(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(!raw){ const data = seed(); save(data); return data; }
+  try{ return JSON.parse(raw) }catch(e){ return seed() }
+}
+function save(data){ localStorage.setItem(LS_KEY, JSON.stringify(data)) }
+function seed(){
+  const now = new Date();
+  const p1 = {
+    id: uid(), firstName:'John', lastName:'Doe', gender:'male', dob:'1980-06-15',
+    email:'john@example.com', phone:'+1 555-0101',
+    address:'123 Main St, Springfield', bloodType:'O+', heightCm:178, weightKg:85,
+    insurance:{payer:'Acme Health', plan:'Gold PPO', memberId:'ACM12345'},
+    balance: 120.50,
+    emergency:{name:'Jane Doe', phone:'+1 555-0202', relation:'Spouse'},
+    allergies:[{substance:'Penicillin', reaction:'Rash', severity:'moderate'}],
+    conditions:[{name:'Type 2 Diabetes', status:'active'},{name:'Hypertension', status:'active'}],
+    meds:[{name:'Metformin', dose:'500 mg', freq:'BID', start:'2023-01-15', status:'active'}],
+    immunizations:[{vaccine:'Influenza', date:'2024-11-01'}],
+    vitals:[{date:fmtDate(now,-30), bp:'130/80', hr:76, temp:36.8, spo2:98, weightKg:85, heightCm:178},
+            {date:fmtDate(now,-1), bp:'128/78', hr:74, temp:36.7, spo2:98, weightKg:84.5, heightCm:178}],
+    labs:[{date:'2025-05-12', test:'HbA1c', value:6.8, unit:'%', ref:'<5.7%'},
+          {date:'2025-05-12', test:'LDL-C', value:112, unit:'mg/dL', ref:'<100 mg/dL'}],
+    lifestyle:{dietPreference:'vegetarian', activity:'moderate', smoking:'never', alcohol:'occasionally', sleepHours:7, hydration:'2L/day'},
+    appointments:[{id:uid(), date:fmtDate(now,3)+'T10:00', reason:'Routine follow-up', provider:'Dr. Lee', location:'Clinic A', status:'upcoming'}],
+    documents:[{title:'Last Discharge Summary', url:'#', date:'2024-10-02'}],
+    notes:[{date:'2025-06-01', text:'Advised SMBG twice daily. Emphasized DASH-style diet.'}],
+    careTeam:[{name:'Dr. Lee', role:'Primary Care', phone:'555-0303'}],
+  };
+  const p2 = {
+    id: uid(), firstName:'Aisha', lastName:'Khan', gender:'female', dob:'1993-04-02',
+    email:'aisha@example.com', phone:'+44 7700 900123',
+    address:'221B Baker St, London', bloodType:'A+', heightCm:162, weightKg:60,
+    insurance:{payer:'NHS', plan:'Standard', memberId:'NHS-7788'},
+    balance: 0,
+    emergency:{name:'Sara Khan', phone:'+44 7700 900456', relation:'Sister'},
+    allergies:[{substance:'Lactose', reaction:'GI upset', severity:'mild'}],
+    conditions:[{name:'Iron-deficiency anemia', status:'active'}],
+    meds:[{name:'Ferrous sulfate', dose:'325 mg', freq:'Daily', start:'2025-01-10', status:'active'}],
+    immunizations:[{vaccine:'Tdap', date:'2023-02-14'}],
+    vitals:[{date:'2025-05-01', bp:'112/70', hr:68, temp:36.6, spo2:99, weightKg:60, heightCm:162}],
+    labs:[{date:'2025-05-06', test:'Hemoglobin', value:10.8, unit:'g/dL', ref:'12-16 g/dL'}],
+    lifestyle:{dietPreference:'lacto-vegetarian', activity:'light', smoking:'never', alcohol:'never', sleepHours:8, hydration:'2.2L/day'},
+    appointments:[{id:uid(), date:fmtDate(now,10)+'T14:00', reason:'Nutrition consult', provider:'RD Gomez', location:'Clinic B', status:'upcoming'}],
+    documents:[], notes:[], careTeam:[{name:'RD Gomez', role:'Dietitian', phone:'555-0808'}],
+  };
+  return { patients:[p1,p2], selectedId:null }
+}
+function fmtDate(base, offsetDays=0){
+  const d = new Date(base);
+  d.setDate(d.getDate()+offsetDays);
+  return d.toISOString().slice(0,10);
+}
+let state = load();
+
+/* ========== Router ========== */
+const view = document.getElementById('view');
+const routes = {
+  dashboard: renderDashboard,
+  patients: renderPatients,
+  new: renderNewPatient,
+  diet: renderGlobalDietCoach,
+  about: renderAbout
+}
+let currentRoute = 'dashboard';
+function navigate(route, params={}){
+  currentRoute = route;
+  document.querySelectorAll('aside .nav button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.route===route)
+  });
+  view.innerHTML = '';
+  routes[route](params);
+}
+document.querySelectorAll('aside .nav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>navigate(btn.dataset.route))
+});
+document.getElementById('newPatientBtn').addEventListener('click', ()=>navigate('new'));
+
+/* ========== Utilities ========== */
+function setSelected(id){
+  state.selectedId = id; save(state); renderSidebarPatient();
+}
+function getSelected(){ return state.patients.find(p=>p.id===state.selectedId) || null }
+function ageFromDob(dob){
+  if(!dob) return null;
+  const d=new Date(dob); const diff=Date.now()-d.getTime(); const a=new Date(diff); return Math.abs(a.getUTCFullYear()-1970);
+}
+function bmiCalc(w,h){ if(!w||!h) return null; const m=h/100; return (w/(m*m)).toFixed(1) }
+function cap(s){ return (s||'').charAt(0).toUpperCase()+ (s||'').slice(1) }
+
+/* ========== Sidebar Selected Patient ========== */
+function renderSidebarPatient(){
+  const el = document.getElementById('sidebarPatient');
+  const p = getSelected();
+  if(!p){ el.innerHTML = '<div class="muted">No patient selected</div>'; return }
+  const age = ageFromDob(p.dob);
+  const bmi = bmiCalc(p.weightKg,p.heightCm);
+  el.innerHTML = `
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <div style="font-weight:700">${p.firstName} ${p.lastName}</div>
+        <div class="muted">${cap(p.gender)} • ${age}y</div>
+      </div>
+      <button class="btn small" id="open360">Open 360°</button>
+    </div>
+    <div class="hr"></div>
+    <div class="row"><span class="pill">HT: ${p.heightCm||'—'} cm</span><span class="pill">WT: ${p.weightKg||'—'} kg</span><span class="pill">BMI: ${bmi||'—'}</span></div>
+    <div style="margin-top:8px" class="muted">Conditions:</div>
+    <div class="row">${(p.conditions||[]).slice(0,5).map(c=>`<span class="badge">${c.name}</span>`).join('') || '<span class="muted">None</span>'}</div>
+  `;
+  el.querySelector('#open360').addEventListener('click', ()=>{
+    navigate('patients');
+    setTimeout(()=> openPatientProfile(p.id), 0);
+  })
+}
+
+/* ========== Dashboard ========== */
+function renderDashboard(){
+  const today = new Date().toISOString().slice(0,10);
+  const totalPatients = state.patients.length;
+  const upcoming = state.patients.flatMap(p=>p.appointments||[]).filter(a=>a.status==='upcoming').length;
+  const todayAppts = state.patients.flatMap(p=>p.appointments||[]).filter(a=> (a.date||'').slice(0,10)===today).length;
+
+  const shell = document.createElement('div');
+  shell.className = 'grid cols-3';
+
+  shell.innerHTML = `
+    <div class="card kpi"><div><div class="big">${totalPatients}</div><div class="label">Total Patients</div></div><div>👥</div></div>
+    <div class="card kpi"><div><div class="big">${upcoming}</div><div class="label">Upcoming Appointments</div></div><div>📅</div></div>
+    <div class="card kpi"><div><div class="big">${todayAppts}</div><div class="label">Today</div></div><div>🕒</div></div>
+  `;
+  const second = document.createElement('div');
+  second.className = 'grid cols-2';
+  second.innerHTML = `
+    <div class="card">
+      <h3>Recent Patients</h3>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Age</th><th>Phone</th><th></th></tr></thead>
+        <tbody>
+          ${state.patients.slice(-5).map(p=>`
+            <tr>
+              <td>${p.firstName} ${p.lastName}</td>
+              <td>${ageFromDob(p.dob)||'—'}</td>
+              <td>${p.phone||'—'}</td>
+              <td><button class="btn small" data-open="${p.id}">Open</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Quick Actions</h3>
+      <div class="row">
+        <button class="btn" onclick="navigate('new')">➕ Add Patient</button>
+        <button class="btn" onclick="navigate('patients')">👥 View Patients</button>
+        <button class="btn" onclick="navigate('diet')">🥗 Diet Coach</button>
+      </div>
+      <div class="hr"></div>
+      <div class="muted">Tip: Use Export/Import (top-right) to move demo data between browsers.</div>
+    </div>
+  `;
+  view.appendChild(shell);
+  view.appendChild(second);
+  view.querySelectorAll('[data-open]').forEach(b=>{
+    b.addEventListener('click', ()=>{ setSelected(b.dataset.open); navigate('patients'); setTimeout(()=>openPatientProfile(b.dataset.open),0); })
+  })
+}
+
+/* ========== Patients List & 360° Profile ========== */
+function renderPatients(){
+  const container = document.createElement('div');
+  container.className = 'grid cols-1';
+
+  const tableCard = document.createElement('div');
+  tableCard.className = 'card';
+  tableCard.innerHTML = `
+    <div class="row" style="justify-content:space-between;">
+      <h3>Patients</h3>
+      <div class="row">
+        <input id="patientSearch" class="field" placeholder="Search name/phone..." style="min-width:240px" />
+        <button class="btn" onclick="navigate('new')">+ New</button>
+      </div>
+    </div>
+    <table class="table">
+      <thead><tr><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th><th>Conditions</th><th>Balance</th><th></th></tr></thead>
+      <tbody id="patientsTbody"></tbody>
+    </table>
+  `;
+  container.appendChild(tableCard);
+
+  const profileCard = document.createElement('div');
+  profileCard.className = 'card hidden';
+  profileCard.id = 'profileCard';
+  container.appendChild(profileCard);
+
+  view.appendChild(container);
+
+  const tbody = tableCard.querySelector('#patientsTbody');
+  const searchInput = tableCard.querySelector('#patientSearch');
+  function renderList(){
+    const q = (searchInput.value||'').toLowerCase().trim();
+    const items = state.patients.filter(p=>{
+      const s = [p.firstName,p.lastName,p.phone,(p.id||'')].join(' ').toLowerCase();
+      return s.includes(q)
+    });
+    tbody.innerHTML = items.map(p=>{
+      return `<tr>
+        <td>${p.firstName} ${p.lastName}</td>
+        <td>${ageFromDob(p.dob)||'—'}</td>
+        <td>${cap(p.gender||'—')}</td>
+        <td>${p.phone||'—'}</td>
+        <td>${(p.conditions||[]).map(c=>c.name).slice(0,3).join(', ')||'—'}</td>
+        <td>$${(p.balance||0).toFixed(2)}</td>
+        <td><button class="btn small" data-open="${p.id}">Open 360°</button></td>
+      </tr>`
+    }).join('');
+    tbody.querySelectorAll('[data-open]').forEach(b=>{
+      b.addEventListener('click', ()=> openPatientProfile(b.dataset.open))
+    });
+  }
+  renderList();
+  searchInput.addEventListener('input', renderList);
+
+  // If already selected, open directly
+  if(state.selectedId){ openPatientProfile(state.selectedId) }
+}
+
+function openPatientProfile(id){
+  const p = state.patients.find(x=>x.id===id);
+  if(!p) return;
+  setSelected(id);
+  const profileCard = document.getElementById('profileCard');
+  profileCard.classList.remove('hidden');
+  const age = ageFromDob(p.dob);
+  const bmi = bmiCalc(p.weightKg,p.heightCm);
+
+  // Tabs
+  const tabs = ['Overview','Demographics','Conditions','Allergies','Medications','Vitals','Labs','Immunizations','Lifestyle','Appointments','Documents','Notes','Care Team','Insurance & Billing','Diet Coach'];
+  let activeTab = 'Overview';
+
+  function renderTab(){
+    profileCard.innerHTML = `
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <h3>${p.firstName} ${p.lastName} <span class="muted">(${cap(p.gender)} • ${age}y)</span></h3>
+          <div class="row">
+            <span class="pill">Height: ${p.heightCm||'—'} cm</span>
+            <span class="pill">Weight: ${p.weightKg||'—'} kg</span>
+            <span class="pill">BMI: ${bmi||'—'}</span>
+            <span class="pill">Blood: ${p.bloodType||'—'}</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn small" id="deletePatient" title="Delete patient">🗑️</button>
+        </div>
+      </div>
+
+      <div class="tabbar">${tabs.map(t=>`<div class="tab ${t===activeTab?'active':''}" data-tab="${t}">${t}</div>`).join('')}</div>
+      <div id="tabContent"></div>
+    `;
+    profileCard.querySelectorAll('.tab').forEach(tb=> tb.addEventListener('click', ()=>{ activeTab = tb.dataset.tab; renderTab() }));
+    profileCard.querySelector('#deletePatient').addEventListener('click', ()=>{
+      if(confirm('Delete this patient?')){ state.patients = state.patients.filter(x=>x.id!==p.id); save(state); navigate('patients'); renderSidebarPatient(); }
+    });
+
+    const c = profileCard.querySelector('#tabContent');
+    switch(activeTab){
+      case 'Overview': return renderOverview(c,p);
+      case 'Demographics': return renderDemographics(c,p);
+      case 'Conditions': return renderConditions(c,p);
+      case 'Allergies': return renderAllergies(c,p);
+      case 'Medications': return renderMedications(c,p);
+      case 'Vitals': return renderVitals(c,p);
+      case 'Labs': return renderLabs(c,p);
+      case 'Immunizations': return renderImmunizations(c,p);
+      case 'Lifestyle': return renderLifestyle(c,p);
+      case 'Appointments': return renderAppointments(c,p);
+      case 'Documents': return renderDocuments(c,p);
+      case 'Notes': return renderNotes(c,p);
+      case 'Care Team': return renderCareTeam(c,p);
+      case 'Insurance & Billing': return renderInsurance(c,p);
+      case 'Diet Coach': return renderDietCoach(c,p);
+    }
+  }
+  renderTab();
+}
+
+/* ========== Tab Renderers ========== */
+function renderOverview(c,p){
+  const nextAppt = (p.appointments||[]).find(a=>a.status==='upcoming');
+  c.innerHTML = `
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>At a glance</h3>
+        <div class="row">
+          <span class="pill">Age: ${ageFromDob(p.dob)||'—'}</span>
+          <span class="pill">BMI: ${bmiCalc(p.weightKg,p.heightCm)||'—'}</span>
+          <span class="pill">Activity: ${p.lifestyle?.activity||'—'}</span>
+        </div>
+        <div class="hr"></div>
+        <div><b>Conditions</b></div>
+        <div class="row">${(p.conditions||[]).map(x=>`<span class="badge">${x.name}</span>`).join('') || '<span class="muted">None</span>'}</div>
+        <div class="hr"></div>
+        <div><b>Allergies</b></div>
+        <div class="row">${(p.allergies||[]).map(x=>`<span class="badge">${x.substance}</span>`).join('') || '<span class="muted">None</span>'}</div>
+      </div>
+      <div class="card">
+        <h3>Recent Vitals</h3>
+        <table class="table">
+          <thead><tr><th>Date</th><th>BP</th><th>HR</th><th>SpO₂</th><th>Weight</th></tr></thead>
+          <tbody>
+            ${[...(p.vitals||[])].slice(-5).reverse().map(v=>`
+              <tr><td>${v.date}</td><td>${v.bp||'—'}</td><td>${v.hr||'—'}</td><td>${v.spo2||'—'}</td><td>${v.weightKg||'—'} kg</td></tr>
+            `).join('') || '<tr><td colspan="5" class="muted">No vitals</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Next Appointment</h3>
+        ${nextAppt ? `
+          <div class="row"><span class="badge status-upcoming">Upcoming</span><b>${new Date(nextAppt.date).toLocaleString()}</b></div>
+          <div class="muted">${nextAppt.reason||''} • ${nextAppt.provider||''} • ${nextAppt.location||''}</div>
+        ` : `<div class="muted">No upcoming appointments</div>`}
+        <div class="hr"></div>
+        <button class="btn small" id="quickAddAppt">+ Add Appointment</button>
+      </div>
+    </div>
+  `;
+  c.querySelector('#quickAddAppt').addEventListener('click', ()=>{
+    const date = prompt('Date/time (YYYY-MM-DDTHH:mm):', new Date().toISOString().slice(0,16));
+    if(!date) return;
+    const reason = prompt('Reason:', 'Follow-up');
+    const provider = prompt('Provider:', 'Dr. Lee');
+    const location = prompt('Location:', 'Clinic A');
+    p.appointments = p.appointments || [];
+    p.appointments.push({id:uid(),date,reason,provider,location,status:'upcoming'});
+    save(state); openPatientProfile(p.id);
+  })
+}
+
+function renderDemographics(c,p){
+  c.innerHTML = `
+    <div class="grid cols-2">
+      <div>
+        <h3>Demographics</h3>
+        <div class="field"><label>First name</label><input id="fn" value="${p.firstName||''}"/></div>
+        <div class="field"><label>Last name</label><input id="ln" value="${p.lastName||''}"/></div>
+        <div class="field"><label>Gender</label>
+          <select id="gender">
+            ${['male','female','other'].map(g=>`<option ${p.gender===g?'selected':''}>${g}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>DOB</label><input id="dob" type="date" value="${p.dob||''}"/></div>
+        <div class="field"><label>Height (cm)</label><input id="h" type="number" value="${p.heightCm||''}"/></div>
+        <div class="field"><label>Weight (kg)</label><input id="w" type="number" value="${p.weightKg||''}"/></div>
+        <div class="row"><button class="btn success" id="saveDemo">Save</button></div>
+      </div>
+      <div>
+        <h3>Contacts</h3>
+        <div class="field"><label>Email</label><input id="email" value="${p.email||''}"/></div>
+        <div class="field"><label>Phone</label><input id="phone" value="${p.phone||''}"/></div>
+        <div class="field"><label>Address</label><input id="address" value="${p.address||''}"/></div>
+        <h3>Emergency Contact</h3>
+        <div class="field"><label>Name</label><input id="ecname" value="${p.emergency?.name||''}"/></div>
+        <div class="field"><label>Phone</label><input id="ecphone" value="${p.emergency?.phone||''}"/></div>
+        <div class="field"><label>Relation</label><input id="ecrel" value="${p.emergency?.relation||''}"/></div>
+      </div>
+    </div>
+  `;
+  c.querySelector('#saveDemo').addEventListener('click', ()=>{
+    p.firstName = c.querySelector('#fn').value.trim();
+    p.lastName = c.querySelector('#ln').value.trim();
+    p.gender = c.querySelector('#gender').value;
+    p.dob = c.querySelector('#dob').value;
+    p.heightCm = +c.querySelector('#h').value || null;
+    p.weightKg = +c.querySelector('#w').value || null;
+    p.email = c.querySelector('#email').value.trim();
+    p.phone = c.querySelector('#phone').value.trim();
+    p.address = c.querySelector('#address').value.trim();
+    p.emergency = {name:c.querySelector('#ecname').value.trim(), phone:c.querySelector('#ecphone').value.trim(), relation:c.querySelector('#ecrel').value.trim()};
+    save(state); renderSidebarPatient(); openPatientProfile(p.id);
+  })
+}
+
+function renderConditions(c,p){
+  c.innerHTML = `
+    <div class="grid cols-2">
+      <div>
+        <h3>Conditions</h3>
+        <div id="condList" class="row"></div>
+      </div>
+      <div>
+        <h3>Add Condition</h3>
+        <div class="field"><label>Name</label><input id="cname" placeholder="e.g., Type 2 Diabetes"/></div>
+        <div class="field"><label>Status</label><select id="cstatus"><option>active</option><option>resolved</option></select></div>
+        <button class="btn success" id="addCond">Add</button>
+      </div>
+    </div>
+  `;
+  function draw(){ 
+    const div = c.querySelector('#condList'); 
+    div.innerHTML = (p.conditions||[]).map((x,i)=>`<span class="pill">${x.name} • ${x.status} <button class="btn small" data-del="${i}">✖</button></span>`).join('')||'<span class="muted">None</span>';
+    div.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.conditions.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addCond').addEventListener('click',()=>{
+    p.conditions = p.conditions||[];
+    const name = c.querySelector('#cname').value.trim(); if(!name) return;
+    const status = c.querySelector('#cstatus').value;
+    p.conditions.push({name,status}); save(state); renderConditions(c,p);
+  })
+}
+
+function renderAllergies(c,p){
+  c.innerHTML = `
+    <div class="grid cols-2">
+      <div>
+        <h3>Allergies</h3>
+        <table class="table">
+          <thead><tr><th>Substance</th><th>Reaction</th><th>Severity</th><th></th></tr></thead>
+          <tbody id="algRows"></tbody>
+        </table>
+      </div>
+      <div>
+        <h3>Add Allergy</h3>
+        <div class="field"><label>Substance</label><input id="asub"/></div>
+        <div class="field"><label>Reaction</label><input id="areact"/></div>
+        <div class="field"><label>Severity</label><select id="asev"><option>mild</option><option>moderate</option><option>severe</option></select></div>
+        <button class="btn success" id="addAlg">Add</button>
+      </div>
+    </div>
+  `;
+  function draw(){
+    const rows = c.querySelector('#algRows');
+    rows.innerHTML = (p.allergies||[]).map((a,i)=>`
+      <tr><td>${a.substance}</td><td>${a.reaction||'—'}</td><td>${a.severity||'—'}</td>
+      <td><button class="btn small" data-del="${i}">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="muted">No allergies</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.allergies.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addAlg').addEventListener('click',()=>{
+    p.allergies = p.allergies||[];
+    const sub = c.querySelector('#asub').value.trim(); if(!sub) return;
+    p.allergies.push({substance:sub, reaction:c.querySelector('#areact').value.trim(), severity:c.querySelector('#asev').value});
+    save(state); renderAllergies(c,p);
+  })
+}
+
+function renderMedications(c,p){
+  c.innerHTML = `
+    <div class="grid cols-1">
+      <h3>Medications</h3>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Dose</th><th>Frequency</th><th>Start</th><th>Status</th><th></th></tr></thead>
+        <tbody id="medRows"></tbody>
+      </table>
+      <div class="hr"></div>
+      <div class="grid cols-4">
+        <div class="field"><label>Name</label><input id="mname"></div>
+        <div class="field"><label>Dose</label><input id="mdose" placeholder="e.g., 500 mg"></div>
+        <div class="field"><label>Frequency</label><input id="mfreq" placeholder="e.g., BID"></div>
+        <div class="field"><label>Start</label><input id="mstart" type="date"></div>
+      </div>
+      <div class="field"><label>Status</label><select id="mstatus"><option>active</option><option>stopped</option></select></div>
+      <button class="btn success" id="addMed">Add Medication</button>
+    </div>
+  `;
+  function draw(){
+    const rows = c.querySelector('#medRows');
+    rows.innerHTML = (p.meds||[]).map((m,i)=>`
+      <tr><td>${m.name}</td><td>${m.dose||'—'}</td><td>${m.freq||'—'}</td><td>${m.start||'—'}</td><td>${m.status||'—'}</td>
+      <td><button class="btn small" data-del="${i}">Delete</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No meds</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.meds.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addMed').addEventListener('click',()=>{
+    p.meds = p.meds||[];
+    const name = c.querySelector('#mname').value.trim(); if(!name) return;
+    p.meds.push({name, dose:c.querySelector('#mdose').value.trim(), freq:c.querySelector('#mfreq').value.trim(), start:c.querySelector('#mstart').value, status:c.querySelector('#mstatus').value});
+    save(state); renderMedications(c,p);
+  })
+}
+
+function renderVitals(c,p){
+  c.innerHTML = `
+    <h3>Vitals</h3>
+    <table class="table">
+      <thead><tr><th>Date</th><th>BP</th><th>HR</th><th>Temp</th><th>SpO₂</th><th>Weight</th></tr></thead>
+      <tbody>
+        ${[...(p.vitals||[])].reverse().map(v=>`
+          <tr><td>${v.date}</td><td>${v.bp||'—'}</td><td>${v.hr||'—'}</td><td>${v.temp||'—'}</td><td>${v.spo2||'—'}</td><td>${v.weightKg||'—'} kg</td></tr>
+        `).join('')||'<tr><td colspan="6" class="muted">No vitals</td></tr>'}
+      </tbody>
+    </table>
+    <div class="hr"></div>
+    <div class="grid cols-6">
+      <div class="field"><label>Date</label><input id="vdate" type="date" value="${fmtDate(new Date())}"></div>
+      <div class="field"><label>BP</label><input id="vbp" placeholder="120/80"></div>
+      <div class="field"><label>HR</label><input id="vhr" type="number" placeholder="72"></div>
+      <div class="field"><label>Temp (°C)</label><input id="vtemp" type="number" step="0.1" placeholder="36.6"></div>
+      <div class="field"><label>SpO₂</label><input id="vspo2" type="number" placeholder="98"></div>
+      <div class="field"><label>Weight (kg)</label><input id="vwt" type="number" step="0.1" value="${p.weightKg||''}"></div>
+    </div>
+    <button class="btn success" id="addVital">Add Vitals</button>
+  `;
+  c.querySelector('#addVital').addEventListener('click',()=>{
+    p.vitals = p.vitals||[];
+    p.vitals.push({
+      date:c.querySelector('#vdate').value, bp:c.querySelector('#vbp').value, hr:+c.querySelector('#vhr').value||null,
+      temp:+c.querySelector('#vtemp').value||null, spo2:+c.querySelector('#vspo2').value||null,
+      weightKg:+c.querySelector('#vwt').value||null, heightCm:p.heightCm
+    });
+    if(+c.querySelector('#vwt').value) p.weightKg = +c.querySelector('#vwt').value;
+    save(state); openPatientProfile(p.id);
+  })
+}
+
+function renderLabs(c,p){
+  c.innerHTML = `
+    <h3>Labs</h3>
+    <table class="table">
+      <thead><tr><th>Date</th><th>Test</th><th>Value</th><th>Ref</th><th></th></tr></thead>
+      <tbody id="labRows"></tbody>
+    </table>
+    <div class="hr"></div>
+    <div class="grid cols-4">
+      <div class="field"><label>Date</label><input id="ldate" type="date"></div>
+      <div class="field"><label>Test</label><input id="ltest" placeholder="HbA1c"></div>
+      <div class="field"><label>Value</label><input id="lval" placeholder="6.5"></div>
+      <div class="field"><label>Unit</label><input id="lunit" placeholder="%"></div>
+    </div>
+    <div class="field"><label>Ref</label><input id="lref" placeholder="<5.7%"></div>
+    <button class="btn success" id="addLab">Add Lab</button>
+  `;
+  function draw(){
+    const rows = c.querySelector('#labRows');
+    rows.innerHTML = (p.labs||[]).map((l,i)=>`
+      <tr><td>${l.date||'—'}</td><td>${l.test}</td><td>${l.value||'—'} ${l.unit||''}</td><td>${l.ref||'—'}</td>
+      <td><button class="btn small" data-del="${i}">Delete</button></td></tr>`).join('')||'<tr><td colspan="5" class="muted">No labs</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.labs.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addLab').addEventListener('click',()=>{
+    p.labs = p.labs||[];
+    const test = c.querySelector('#ltest').value.trim(); if(!test) return;
+    p.labs.push({date:c.querySelector('#ldate').value, test, value:c.querySelector('#lval').value, unit:c.querySelector('#lunit').value, ref:c.querySelector('#lref').value});
+    save(state); renderLabs(c,p);
+  })
+}
+
+function renderImmunizations(c,p){
+  c.innerHTML = `
+    <h3>Immunizations</h3>
+    <table class="table">
+      <thead><tr><th>Vaccine</th><th>Date</th><th>Notes</th><th></th></tr></thead>
+      <tbody id="immRows"></tbody>
+    </table>
+    <div class="hr"></div>
+    <div class="grid cols-3">
+      <div class="field"><label>Vaccine</label><input id="ivac"></div>
+      <div class="field"><label>Date</label><input id="idate" type="date"></div>
+      <div class="field"><label>Notes</label><input id="inotes"></div>
+    </div>
+    <button class="btn success" id="addImm">Add Immunization</button>
+  `;
+  function draw(){
+    const rows = c.querySelector('#immRows');
+    rows.innerHTML = (p.immunizations||[]).map((i,idx)=>`
+      <tr><td>${i.vaccine}</td><td>${i.date||'—'}</td><td>${i.notes||'—'}</td>
+      <td><button class="btn small" data-del="${idx}">Delete</button></td></tr>`).join('')||'<tr><td colspan="4" class="muted">No immunizations</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.immunizations.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addImm').addEventListener('click',()=>{
+    p.immunizations=p.immunizations||[];
+    const v = c.querySelector('#ivac').value.trim(); if(!v) return;
+    p.immunizations.push({vaccine:v, date:c.querySelector('#idate').value, notes:c.querySelector('#inotes').value});
+    save(state); renderImmunizations(c,p);
+  })
+}
+
+function renderLifestyle(c,p){
+  c.innerHTML = `
+    <h3>Lifestyle</h3>
+    <div class="grid cols-3">
+      <div class="field"><label>Diet Preference</label>
+        <select id="dietPref">
+          ${['none','vegetarian','lacto-vegetarian','ovo-vegetarian','vegan','pescatarian','halal','kosher','gluten-free','lactose-free','low-carb','Mediterranean','DASH'].map(opt=>`
+            <option ${p.lifestyle?.dietPreference===opt?'selected':''}>${opt}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Activity</label>
+        <select id="activity">${['sedentary','light','moderate','active','very active'].map(a=>`<option ${p.lifestyle?.activity===a?'selected':''}>${a}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Smoking</label>
+        <select id="smoking">${['never','former','current'].map(a=>`<option ${p.lifestyle?.smoking===a?'selected':''}>${a}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Alcohol</label>
+        <select id="alcohol">${['never','occasionally','moderate','frequent'].map(a=>`<option ${p.lifestyle?.alcohol===a?'selected':''}>${a}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Sleep (hours)</label><input id="sleep" type="number" value="${p.lifestyle?.sleepHours||''}"></div>
+      <div class="field"><label>Hydration</label><input id="hydr" value="${p.lifestyle?.hydration||''}"></div>
+    </div>
+    <button class="btn success" id="saveLifestyle">Save Lifestyle</button>
+  `;
+  c.querySelector('#saveLifestyle').addEventListener('click',()=>{
+    p.lifestyle = {
+      dietPreference: c.querySelector('#dietPref').value,
+      activity: c.querySelector('#activity').value,
+      smoking: c.querySelector('#smoking').value,
+      alcohol: c.querySelector('#alcohol').value,
+      sleepHours: +c.querySelector('#sleep').value || null,
+      hydration: c.querySelector('#hydr').value
+    };
+    save(state); openPatientProfile(p.id);
+  })
+}
+
+function renderAppointments(c,p){
+  c.innerHTML = `
+    <h3>Appointments</h3>
+    <table class="table">
+      <thead><tr><th>Date/Time</th><th>Reason</th><th>Provider</th><th>Location</th><th>Status</th><th></th></tr></thead>
+      <tbody id="aptRows"></tbody>
+    </table>
+    <div class="hr"></div>
+    <div class="grid cols-5">
+      <div class="field"><label>Date/Time</label><input id="adate" type="datetime-local"></div>
+      <div class="field"><label>Reason</label><input id="areason"></div>
+      <div class="field"><label>Provider</label><input id="aprovider"></div>
+      <div class="field"><label>Location</label><input id="aloc"></div>
+      <div class="field"><label>Status</label><select id="astatus"><option>upcoming</option><option>completed</option><option>cancelled</option></select></div>
+    </div>
+    <button class="btn success" id="addAppt">Add Appointment</button>
+  `;
+  function draw(){
+    const rows = c.querySelector('#aptRows');
+    rows.innerHTML = (p.appointments||[]).map((a,i)=>`
+      <tr><td>${a.date?new Date(a.date).toLocaleString():'—'}</td><td>${a.reason||'—'}</td><td>${a.provider||'—'}</td><td>${a.location||'—'}</td>
+      <td><span class="badge status-${a.status}">${a.status}</span></td>
+      <td><button class="btn small" data-del="${i}">Delete</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No appointments</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.appointments.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addAppt').addEventListener('click',()=>{
+    p.appointments = p.appointments||[];
+    p.appointments.push({id:uid(), date:c.querySelector('#adate').value, reason:c.querySelector('#areason').value, provider:c.querySelector('#aprovider').value, location:c.querySelector('#aloc').value, status:c.querySelector('#astatus').value});
+    save(state); renderAppointments(c,p);
+  });
+}
+
+function renderDocuments(c,p){
+  c.innerHTML = `
+    <h3>Documents</h3>
+    <table class="table">
+      <thead><tr><th>Title</th><th>Date</th><th>URL</th><th></th></tr></thead>
+      <tbody id="docRows"></tbody>
+    </table>
+    <div class="hr"></div>
+    <div class="grid cols-3">
+      <div class="field"><label>Title</label><input id="dtitle"></div>
+      <div class="field"><label>Date</label><input id="ddate" type="date"></div>
+      <div class="field"><label>URL</label><input id="durl" placeholder="https://... or #"></div>
+    </div>
+    <button class="btn success" id="addDoc">Add Document</button>
+  `;
+  function draw(){
+    const rows = c.querySelector('#docRows');
+    rows.innerHTML = (p.documents||[]).map((d,i)=>`
+      <tr><td>${d.title}</td><td>${d.date||'—'}</td>
+      <td>${d.url?`<a href="${d.url}" target="_blank">Open</a>`:'—'}</td>
+      <td><button class="btn small" data-del="${i}">Delete</button></td></tr>
+    `).join('')||'<tr><td colspan="4" class="muted">No documents</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.documents.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addDoc').addEventListener('click',()=>{
+    p.documents=p.documents||[];
+    const t=c.querySelector('#dtitle').value.trim(); if(!t) return;
+    p.documents.push({title:t, date:c.querySelector('#ddate').value, url:c.querySelector('#durl').value.trim()});
+    save(state); renderDocuments(c,p);
+  })
+}
+
+function renderNotes(c,p){
+  c.innerHTML = `
+    <h3>Notes</h3>
+    <div id="noteList" class="grid cols-1"></div>
+    <div class="hr"></div>
+    <div class="field"><label>New Note</label><textarea id="noteText" placeholder="Clinical note, counseling, etc."></textarea></div>
+    <button class="btn success" id="addNote">Add Note</button>
+  `;
+  function draw(){
+    const list = c.querySelector('#noteList');
+    list.innerHTML = (p.notes||[]).slice().reverse().map(n=>`
+      <div class="card"><div class="muted">${n.date}</div><div>${escapeHtml(n.text)}</div></div>
+    `).join('') || '<div class="muted">No notes</div>';
+  }
+  draw();
+  c.querySelector('#addNote').addEventListener('click',()=>{
+    p.notes = p.notes||[];
+    const text = c.querySelector('#noteText').value.trim(); if(!text) return;
+    p.notes.push({date:new Date().toISOString().slice(0,10), text});
+    save(state); renderNotes(c,p);
+  })
+}
+
+function renderCareTeam(c,p){
+  c.innerHTML = `
+    <h3>Care Team</h3>
+    <table class="table">
+      <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th></th></tr></thead>
+      <tbody id="ctRows"></tbody>
+    </table>
+    <div class="hr"></div>
+    <div class="grid cols-3">
+      <div class="field"><label>Name</label><input id="ctname"></div>
+      <div class="field"><label>Role</label><input id="ctrole" placeholder="Primary Care, Cardiologist, RD..."></div>
+      <div class="field"><label>Phone</label><input id="ctphone"></div>
+    </div>
+    <button class="btn success" id="addCt">Add Member</button>
+  `;
+  function draw(){
+    const rows = c.querySelector('#ctRows');
+    rows.innerHTML = (p.careTeam||[]).map((m,i)=>`
+      <tr><td>${m.name}</td><td>${m.role||'—'}</td><td>${m.phone||'—'}</td>
+      <td><button class="btn small" data-del="${i}">Delete</button></td></tr>
+    `).join('')||'<tr><td colspan="4" class="muted">No care team</td></tr>';
+    rows.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ p.careTeam.splice(+b.dataset.del,1); save(state); draw() }));
+  }
+  draw();
+  c.querySelector('#addCt').addEventListener('click',()=>{
+    p.careTeam=p.careTeam||[];
+    const name=c.querySelector('#ctname').value.trim(); if(!name) return;
+    p.careTeam.push({name, role:c.querySelector('#ctrole').value.trim(), phone:c.querySelector('#ctphone').value.trim()});
+    save(state); renderCareTeam(c,p);
+  })
+}
+
+function renderInsurance(c,p){
+  c.innerHTML = `
+    <div class="grid cols-2">
+      <div>
+        <h3>Insurance</h3>
+        <div class="field"><label>Payer</label><input id="pay" value="${p.insurance?.payer||''}"></div>
+        <div class="field"><label>Plan</label><input id="plan" value="${p.insurance?.plan||''}"></div>
+        <div class="field"><label>Member ID</label><input id="mem" value="${p.insurance?.memberId||''}"></div>
+        <button class="btn success" id="saveIns">Save Insurance</button>
+      </div>
+      <div>
+        <h3>Billing</h3>
+        <div class="kpi"><div><div class="big">$${(p.balance||0).toFixed(2)}</div><div class="label">Outstanding Balance</div></div><div>💳</div></div>
+        <div class="hr"></div>
+        <div class="field"><label>Adjust Balance (+/-)</label><input id="adj" type="number" step="0.01"></div>
+        <button class="btn" id="applyAdj">Apply</button>
+      </div>
+    </div>
+  `;
+  c.querySelector('#saveIns').addEventListener('click',()=>{
+    p.insurance = {payer:c.querySelector('#pay').value.trim(), plan:c.querySelector('#plan').value.trim(), memberId:c.querySelector('#mem').value.trim()};
+    save(state); openPatientProfile(p.id);
+  });
+  c.querySelector('#applyAdj').addEventListener('click',()=>{
+    const delta = parseFloat(c.querySelector('#adj').value); if(isNaN(delta)) return;
+    p.balance = (p.balance||0) + delta;
+    save(state); openPatientProfile(p.id);
+  })
+}
+
+/* ========== Diet Coach (Chatbot) ========== */
+function renderDietCoach(c,p){
+  c.innerHTML = `
+    <div class="grid cols-2">
+      <div>
+        <h3>Diet Coach for ${p.firstName}</h3>
+        <div class="chat" id="chat"></div>
+        <div class="chatbar">
+          <input id="chatInput" placeholder="Tell me your preferences (e.g., I’m vegetarian, lactose-free, want to lose weight)"/>
+          <button class="btn" id="sendMsg">Send</button>
+          <button class="btn success" id="useProfile">Use Profile</button>
+        </div>
+        <div class="muted" style="margin-top:6px">This is an educational prototype, not medical advice.</div>
+      </div>
+      <div>
+        <h3>Preferences & Targets</h3>
+        <div class="grid cols-2">
+          <div class="field"><label>Goal</label>
+            <select id="goal"><option>maintain</option><option>weight loss</option><option>weight gain</option><option>muscle gain</option><option>blood sugar control</option><option>heart health</option><option>kidney friendly</option></select>
+          </div>
+          <div class="field"><label>Diet</label>
+            <select id="diet">
+              ${['none','vegetarian','vegan','lacto-vegetarian','ovo-vegetarian','pescatarian','halal','kosher','gluten-free','lactose-free','low-carb','Mediterranean','DASH'].map(x=>`<option>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>Restrictions (comma)</label><input id="restr" placeholder="nuts, shellfish, pork"></div>
+          <div class="field"><label>Activity</label><select id="activity2"><option>sedentary</option><option>light</option><option>moderate</option><option>active</option><option>very active</option></select></div>
+          <div class="field"><label>Sex</label><select id="sex"><option>male</option><option>female</option></select></div>
+          <div class="field"><label>Age</label><input id="age" type="number" value="${ageFromDob(p.dob)||''}"></div>
+          <div class="field"><label>Height (cm)</label><input id="h2" type="number" value="${p.heightCm||''}"></div>
+          <div class="field"><label>Weight (kg)</label><input id="w2" type="number" value="${p.weightKg||''}"></div>
+        </div>
+        <button class="btn primary" id="genPlan">Generate Diet Plan</button>
+        <div class="hr"></div>
+        <div id="planOut"></div>
+      </div>
+    </div>
+  `;
+  const chat = c.querySelector('#chat');
+  function pushBot(text){ addMsg('bot', text) }
+  function pushUser(text){ addMsg('user', text) }
+  function addMsg(who,text){
+    const div = document.createElement('div');
+    div.className = 'msg '+who;
+    div.innerHTML = `<div class="bubble">${nl2br(escapeHtml(text))}</div>`;
+    chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+  }
+  pushBot(`Hi ${p.firstName}! I can tailor a meal plan using your profile or your preferences. Try: "I’m vegan, want weight loss, low sodium." Or click "Use Profile".`);
+
+  c.querySelector('#sendMsg').addEventListener('click',()=>{
+    const msg = c.querySelector('#chatInput').value.trim(); if(!msg) return;
+    c.querySelector('#chatInput').value='';
+    pushUser(msg);
+    const parsed = parsePrefs(msg);
+    pushBot('Got it! Preferences detected: '+ JSON.stringify(parsed, null, 2));
+    fillPrefs(parsed);
+    const plan = buildDietPlan({...collectPrefs(), name:p.firstName});
+    renderPlan(c.querySelector('#planOut'), plan);
+    pushBot('Generated a plan below based on your message. You can tweak fields on the right and Regenerate.');
+  });
+
+  c.querySelector('#useProfile').addEventListener('click',()=>{
+    const prof = {
+      goal: inferGoalFromConditions(p),
+      diet: p.lifestyle?.dietPreference || 'none',
+      restrictions: (p.allergies||[]).map(a=>a.substance.toLowerCase()),
+      activity: p.lifestyle?.activity || 'light',
+      sex: p.gender || 'male',
+      age: ageFromDob(p.dob)||30,
+      heightCm: p.heightCm||170,
+      weightKg: p.weightKg||70,
+      conditions: (p.conditions||[]).map(c=>c.name.toLowerCase())
+    };
+    fillPrefs(prof);
+    pushBot('Using your profile to generate a plan…');
+    const plan = buildDietPlan({...collectPrefs(), name:p.firstName});
+    renderPlan(c.querySelector('#planOut'), plan);
+  });
+
+  c.querySelector('#genPlan').addEventListener('click',()=>{
+    const plan = buildDietPlan({...collectPrefs(), name:p.firstName});
+    renderPlan(c.querySelector('#planOut'), plan);
+  });
+
+  function collectPrefs(){
+    return {
+      goal: c.querySelector('#goal').value,
+      diet: c.querySelector('#diet').value,
+      restrictions: (c.querySelector('#restr').value||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean),
+      activity: c.querySelector('#activity2').value,
+      sex: c.querySelector('#sex').value,
+      age: +c.querySelector('#age').value||30,
+      heightCm: +c.querySelector('#h2').value||170,
+      weightKg: +c.querySelector('#w2').value||70,
+      conditions: (p.conditions||[]).map(c=>c.name.toLowerCase())
+    }
+  }
+  function fillPrefs(obj){
+    if(obj.goal) c.querySelector('#goal').value = obj.goal;
+    if(obj.diet) c.querySelector('#diet').value = obj.diet;
+    if(obj.restrictions) c.querySelector('#restr').value = (obj.restrictions||[]).join(', ');
+    if(obj.activity) c.querySelector('#activity2').value = obj.activity;
+    if(obj.sex) c.querySelector('#sex').value = obj.sex;
+    if(obj.age) c.querySelector('#age').value = obj.age;
+    if(obj.heightCm) c.querySelector('#h2').value = obj.heightCm;
+    if(obj.weightKg) c.querySelector('#w2').value = obj.weightKg;
+  }
+}
+
+/* Global Diet Coach Page */
+function renderGlobalDietCoach(){
+  const p = getSelected();
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <div class="card">
+      <h3>Diet Coach (no patient selected)</h3>
+      <div class="muted">Tip: Select a patient from Patients → Open 360° → Diet Coach to use their profile. You can still chat here:</div>
+    </div>
+  `;
+  view.appendChild(wrapper);
+  // Reuse a lightweight diet coach
+  const dummy = document.createElement('div');
+  dummy.id='dietGlobal';
+  view.appendChild(dummy);
+  renderDietCoach(dummy, p || {firstName:'Friend', conditions:[], lifestyle:{}});
+}
+
+function renderAbout(){
+  view.innerHTML = `
+    <div class="card">
+      <h3>About</h3>
+      <p>This is a frontend-only prototype of a Patient Management System with a Diet Coach chatbot. Data is stored in your browser (localStorage). No server, no real patient data.</p>
+      <ul>
+        <li>Patients: add/search, open 360° profile</li>
+        <li>360°: demographics, conditions, allergies, meds, vitals, labs, immunizations, lifestyle, appointments, documents, notes, care team, insurance/billing</li>
+        <li>Diet Coach: rule-based planning using patient data or free-text preferences</li>
+      </ul>
+      <p class="muted">Disclaimer: Not medical advice. For demo/education only.</p>
+      <div class="hr"></div>
+      <div class="code">Tech: HTML/CSS/Vanilla JS • Storage: localStorage • No dependencies</div>
+    </div>
+  `;
+}
+
+/* ========== New Patient Form ========== */
+function renderNewPatient(){
+  view.innerHTML = `
+    <div class="card">
+      <h3>New Patient</h3>
+      <div class="grid cols-3">
+        <div class="field"><label>First Name</label><input id="nf"></div>
+        <div class="field"><label>Last Name</label><input id="nl"></div>
+        <div class="field"><label>Gender</label><select id="ng"><option>male</option><option>female</option><option>other</option></select></div>
+        <div class="field"><label>DOB</label><input id="nd" type="date"></div>
+        <div class="field"><label>Height (cm)</label><input id="nh" type="number"></div>
+        <div class="field"><label>Weight (kg)</label><input id="nw" type="number"></div>
+        <div class="field"><label>Phone</label><input id="np"></div>
+        <div class="field"><label>Email</label><input id="ne"></div>
+        <div class="field"><label>Address</label><input id="na"></div>
+      </div>
+      <button class="btn success" id="create">Create</button>
+    </div>
+  `;
+  document.getElementById('create').addEventListener('click',()=>{ 
+    const p = {
+      id: uid(), firstName: gv('nf'), lastName: gv('nl'), gender: gv('ng'), dob: gv('nd'),
+      heightCm: num('nh'), weightKg: num('nw'), phone: gv('np'), email: gv('ne'), address: gv('na'),
+      balance:0, insurance:{}, emergency:{}, allergies:[], conditions:[], meds:[], immunizations:[], vitals:[], labs:[], lifestyle:{}, appointments:[], documents:[], notes:[], careTeam:[]
+    };
+    if(!p.firstName || !p.lastName){ alert('Name required'); return }
+    state.patients.push(p); save(state);
+    setSelected(p.id); navigate('patients'); setTimeout(()=>openPatientProfile(p.id),0);
+  });
+  function gv(id){ return (document.getElementById(id).value||'').trim() }
+  function num(id){ const v = parseFloat(document.getElementById(id).value); return isNaN(v)?null:v }
+}
+
+/* ========== Diet Logic ========== */
+function parsePrefs(text){
+  const t = text.toLowerCase();
+  const obj = {};
+  // diet
+  const dietMap = ['vegan','vegetarian','lacto-vegetarian','ovo-vegetarian','pescatarian','halal','kosher','gluten-free','lactose-free','low-carb','mediterranean','dash'];
+  for(const d of dietMap){ if(t.includes(d)) obj.diet = d; }
+  // goals
+  if(/lose|weight loss|fat loss/.test(t)) obj.goal='weight loss';
+  else if(/gain|bulk|weight gain/.test(t)) obj.goal='weight gain';
+  else if(/muscle/.test(t)) obj.goal='muscle gain';
+  else if(/sugar|diabet/.test(t)) obj.goal='blood sugar control';
+  else if(/heart|cholesterol/.test(t)) obj.goal='heart health';
+  else if(/kidney|ckd/.test(t)) obj.goal='kidney friendly';
+  // activity
+  if(/sedentary/.test(t)) obj.activity='sedentary';
+  else if(/light/.test(t)) obj.activity='light';
+  else if(/moderate/.test(t)) obj.activity='moderate';
+  else if(/active|very active/.test(t)) obj.activity='active';
+  // sex + age like "35f" "29 m"
+  const sex = t.match(/(\d{2})\s*([mf])\b/); if(sex){ obj.age=+sex[1]; obj.sex= sex[2]==='m'?'male':'female' }
+  if(/male/.test(t)) obj.sex='male'; if(/female|woman|girl/.test(t)) obj.sex='female';
+  // height/weight
+  const kg = t.match(/(\d{2,3})\s*kg/); if(kg) obj.weightKg=+kg[1];
+  const cm = t.match(/(\d{2,3})\s*cm/); if(cm) obj.heightCm=+cm[1];
+  // restrictions
+  const restrict = [];
+  if(/lactose|dairy/.test(t)) restrict.push('lactose');
+  if(/gluten/.test(t)) restrict.push('gluten');
+  if(/nut|peanut/.test(t)) restrict.push('nuts');
+  if(/shellfish/.test(t)) restrict.push('shellfish');
+  if(/egg/.test(t)) restrict.push('egg');
+  if(/pork/.test(t)) restrict.push('pork');
+  obj.restrictions = restrict;
+  return obj;
+}
+function inferGoalFromConditions(p){
+  const names = (p.conditions||[]).map(c=>c.name.toLowerCase());
+  if(names.some(s=>s.includes('diabetes'))) return 'blood sugar control';
+  if(names.some(s=>s.includes('hypertension'))) return 'heart health';
+  return 'maintain';
+}
+function activityFactor(a){
+  return {sedentary:1.2, light:1.375, moderate:1.55, active:1.725, 'very active':1.9}[a||'light'] || 1.375
+}
+function calcBMR({sex='male', weightKg=70, heightCm=170, age=30}={}){
+  return Math.round(10*weightKg + 6.25*heightCm - 5*age + (sex==='male'?5:-161));
+}
+function targetCalories(bmr, goal){
+  let cal = Math.round(bmr*1); // baseline before activity
+  // activity applied outside
+  if(goal==='weight loss') cal -= 500;
+  if(goal==='weight gain' || goal==='muscle gain') cal += 300;
+  return Math.max(1200, cal);
+}
+function macroPlan(cal, context){
+  const conds = (context.conditions||[]).map(s=>s.toLowerCase());
+  let carbPct=0.45, protPct=0.30, fatPct=0.25;
+  if(conds.some(x=>x.includes('diab'))) { carbPct=0.35; protPct=0.30; fatPct=0.35; }
+  if(conds.some(x=>x.includes('hypert')||x.includes('heart'))) { carbPct=0.45; protPct=0.25; fatPct=0.30; }
+  if(conds.some(x=>x.includes('kidney')||x.includes('ckd'))) {
+    const gramsProtein = Math.max(0.8 * (context.weightKg||70), 45);
+    return {
+      calories: cal, proteinG: Math.round(gramsProtein), carbsG: Math.round((cal*0.50)/4), fatG: Math.round((cal*0.30)/9),
+      note: 'CKD-friendly: moderate protein ~0.8 g/kg, monitor K/Phos with clinician.'
+    }
+  }
+  const proteinG = Math.round((cal*protPct)/4);
+  const carbsG = Math.round((cal*carbPct)/4);
+  const fatG = Math.round((cal*fatPct)/9);
+  return {calories:cal, proteinG, carbsG, fatG};
+}
+function foodBank(){
+  return {
+    proteins:[
+      {n:'chicken breast', tags:['meat']},
+      {n:'salmon', tags:['fish']},
+      {n:'eggs', tags:['egg']},
+      {n:'tofu', tags:['vegan','veg']},
+      {n:'tempeh', tags:['vegan','veg']},
+      {n:'lentils', tags:['vegan','veg']},
+      {n:'chickpeas', tags:['vegan','veg']},
+      {n:'greek yogurt', tags:['dairy']},
+      {n:'paneer', tags:['dairy']},
+      {n:'turkey', tags:['meat']},
+      {n:'tuna', tags:['fish']},
+    ],
+    carbs:[
+      {n:'oats', gi:'low', tags:['gluten']},
+      {n:'quinoa', gi:'low', tags:['gf']},
+      {n:'brown rice', gi:'medium', tags:['gf']},
+      {n:'sweet potato', gi:'medium', tags:['gf']},
+      {n:'whole wheat bread', gi:'high', tags:['gluten']},
+      {n:'legumes', gi:'low', tags:['gf']},
+      {n:'buckwheat', gi:'low', tags:['gf']}
+    ],
+    fats:[
+      {n:'olive oil'},{n:'avocado'},{n:'almonds', tags:['nuts']},{n:'walnuts', tags:['nuts']},{n:'chia seeds'},{n:'peanut butter', tags:['nuts']}
+    ],
+    veggies:[
+      {n:'spinach'},{n:'broccoli'},{n:'bell peppers'},{n:'carrots'},{n:'cauliflower'},{n:'cucumber'},{n:'zucchini'}
+    ],
+    fruits:[
+      {n:'berries'},{n:'apple'},{n:'orange'},{n:'banana'},{n:'pear'},{n:'grapes'}
+    ]
+  }
+}
+function filterFoods(bank, prefs){
+  const diet = (prefs.diet||'none').toLowerCase();
+  const restrict = (prefs.restrictions||[]).map(x=>x.toLowerCase());
+  function ok(item){
+    const tags = item.tags||[];
+    if(diet.includes('vegan') && (tags.includes('meat')||tags.includes('fish')||tags.includes('dairy')||tags.includes('egg'))) return false;
+    if(diet.includes('vegetarian') && (tags.includes('meat')||tags.includes('fish'))) return false;
+    if(diet.includes('pescatarian') && tags.includes('meat')) return false;
+    if(diet.includes('lactose') && tags.includes('dairy')) return false;
+    if(diet.includes('gluten') && tags.includes('gluten')) return false;
+    if(restrict.includes('nuts') && tags.includes('nuts')) return false;
+    if(restrict.includes('shellfish') && tags.includes('fish')) return false; // simplistic
+    if(restrict.includes('pork') && item.n.includes('pork')) return false;
+    return true;
+  }
+  const out = {};
+  for(const k of Object.keys(bank)){
+    out[k] = bank[k].filter(ok);
+  }
+  return out;
+}
+function buildDietPlan(prefs){
+  const {sex='male', age=30, heightCm=170, weightKg=70, activity='light'} = prefs;
+  const bmr = calcBMR({sex, age, heightCm, weightKg});
+  const cal = targetCalories(Math.round(bmr * activityFactor(activity)), prefs.goal);
+  const macros = macroPlan(cal, prefs);
+  const bank = filterFoods(foodBank(), prefs);
+  const lowGI = item => item.gi==='low' || ['oats','buckwheat','quinoa','legumes','berries','apple'].includes(item.n);
+
+  // Build simple 1-day plan
+  function pick(list){ return list[Math.floor(Math.random()*list.length)]?.n }
+  const protein = pick(bank.proteins)||'tofu';
+  const carb1 = pick(bank.carbs.filter(lowGI)) || pick(bank.carbs) || 'quinoa';
+  const carb2 = pick(bank.carbs.filter(lowGI)) || pick(bank.carbs) || 'brown rice';
+  const veg1 = pick(bank.veggies)||'broccoli', veg2 = pick(bank.veggies)||'spinach';
+  const fat1 = pick(bank.fats)||'olive oil', snack = pick(bank.fruits)||'apple';
+  const breakfast = prefs.diet?.includes('low-carb')
+    ? `Veg omelette (or tofu scramble) with ${veg1}, side of avocado`
+    : `Oats with berries, chia; side ${snack}`;
+  const lunch = `${protein} bowl: ${carb1}, ${veg1}+${veg2}, ${fat1}`;
+  const dinner = `${protein} + ${carb2} + sautéed ${veg2}`;
+  const snacks = prefs.diet?.includes('vegan') ? 'Hummus + veggies; mixed seeds' : 'Greek yogurt (or soy yogurt) with berries';
+
+  const notes = [];
+  if((prefs.conditions||[]).some(x=>x.includes('diab'))) notes.push('Focus on low-GI carbs and fiber; distribute carbs evenly across meals.');
+  if((prefs.conditions||[]).some(x=>x.includes('hypert'))) notes.push('Limit sodium; favor herbs/spices over salt; follow DASH-style choices.');
+  if((prefs.conditions||[]).some(x=>x.includes('kidney'))) notes.push('Monitor potassium/phosphorus; discuss targets with a renal dietitian.');
+
+  return {
+    meta:{ name:prefs.name||'You', goal:prefs.goal||'maintain', diet:prefs.diet||'none', activity, sex, age, heightCm, weightKg },
+    calories: macros.calories,
+    macros,
+    plan:{
+      breakfast, lunch, dinner, snacks
+    },
+    grocery:[protein, carb1, carb2, veg1, veg2, fat1, snack].filter(Boolean),
+    tips:[
+      'Hydration: ~30–35 mL/kg/day unless restricted.',
+      'Plate method: 1/2 veggies, 1/4 lean protein, 1/4 smart carbs.',
+      'Batch cook for 2–3 days to stay consistent.'
+    ].concat(notes)
+  }
+}
+function renderPlan(target, plan){
+  target.innerHTML = `
+    <div class="card">
+      <h3>${plan.meta.name} — ${cap(plan.meta.goal)} • Diet: ${cap(plan.meta.diet)} • Activity: ${cap(plan.meta.activity)}</h3>
+      <div class="row">
+        <span class="pill">Cal: ${plan.calories} kcal</span>
+        <span class="pill">Protein: ${plan.macros.proteinG} g</span>
+        <span class="pill">Carbs: ${plan.macros.carbsG} g</span>
+        <span class="pill">Fat: ${plan.macros.fatG} g</span>
+      </div>
+      <div class="hr"></div>
+      <div class="grid cols-2">
+        <div>
+          <b>Breakfast</b><div>${plan.plan.breakfast}</div>
+          <div class="hr"></div>
+          <b>Lunch</b><div>${plan.plan.lunch}</div>
+        </div>
+        <div>
+          <b>Dinner</b><div>${plan.plan.dinner}</div>
+          <div class="hr"></div>
+          <b>Snacks</b><div>${plan.plan.snacks}</div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <b>Grocery Ideas</b>
+      <div class="row">${plan.grocery.map(i=>`<span class="badge">${i}</span>`).join('')}</div>
+      <div class="hr"></div>
+      <b>Tips</b>
+      <ul>${plan.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+      <div class="muted">This plan is generated by a rules-based demo. For medical conditions, confirm with a clinician.</div>
+    </div>
+  `;
+}
+
+/* ========== Helpers ========== */
+function nl2br(s){ return s.replace(/\n/g,'<br>') }
+function escapeHtml(s){ return s.replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m])) }
+
+/* ========== Global Search ========== */
+document.getElementById('globalSearch').addEventListener('input', (e)=>{
+  const q = e.target.value.toLowerCase();
+  if(currentRoute!=='patients') return;
+  const rows = document.querySelectorAll('#patientsTbody tr');
+  rows.forEach(r=>{
+    const txt = r.textContent.toLowerCase();
+    r.style.display = txt.includes(q)?'':'none';
+  });
+});
+
+/* ========== Export / Import ========== */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'health360-demo.json'; a.click();
+});
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const data = JSON.parse(fr.result);
+      if(!data || !Array.isArray(data.patients)) throw new Error('Invalid file');
+      state = data; save(state); renderSidebarPatient(); navigate('dashboard');
+      alert('Import successful');
+    }catch(err){ alert('Import failed: '+err.message) }
+  };
+  fr.readAsText(file);
+});
+
+/* ========== Init ========== */
+renderSidebarPatient();
+navigate('dashboard');
+
+</script>
+</body>
+</html>
